@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h2>Store Settings</h2>
+</div>
+
+<div class="card mt-4" style="max-width: 800px;">
+  <div class="card-body">
+    <form action="/admin/settings/update" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Store Name</label>
+        <input type="text" name="store_name" class="form-control" value="<%= config.store_name %>" required>
+      </div>
+      <div class="form-group">
+        <label>Store Description</label>
+        <textarea name="store_description" class="form-control" rows="3"><%= config.store_description %></textarea>
+      </div>
+      <div class="form-group">
+        <label>Hero Background Image</label>
+        <input type="file" name="hero_image" class="form-control" accept="image/*" onchange="previewImage(event, 'settingsHeroPreview')">
+        <img id="settingsHeroPreview" class="img-preview mt-2" style="<%= config.hero_image ? 'display:block;' : 'display:none;' %>" src="<%= config.hero_image ? config.hero_image : '' %>">
+      </div>
+      <div class="form-group">
+        <label>WhatsApp Number (e.g. 6281234567890)</label>
+        <input type="text" name="whatsapp_number" class="form-control" value="<%= config.whatsapp_number %>">
+      </div>
+      <div class="form-group">
+        <label>Instagram URL</label>
+        <input type="url" name="instagram" class="form-control" value="<%= config.instagram %>">
+      </div>
+      <div class="form-group">
+        <label>Facebook URL</label>
+        <input type="url" name="facebook" class="form-control" value="<%= config.facebook %>">
+      </div>
+      <div class="form-group">
+        <label>TikTok URL</label>
+        <input type="url" name="tiktok" class="form-control" value="<%= config.tiktok %>">
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Save Settings</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

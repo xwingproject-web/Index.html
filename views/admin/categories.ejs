@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+
+<div class="page-header d-flex justify-between align-center">
+  <h2>Categories</h2>
+  <button class="btn btn-primary" onclick="openModal('addCategoryModal')">+ Add Category</button>
+</div>
+
+<div class="card mt-4">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (categories.length > 0) { %>
+          <% categories.forEach(function(cat) { %>
+            <tr>
+              <td><%= cat.id %></td>
+              <td>
+                <% if(cat.image) { %>
+                  <img src="<%= cat.image %>" class="table-img" alt="<%= cat.name %>">
+                <% } else { %>
+                  <span class="text-muted">No image</span>
+                <% } %>
+              </td>
+              <td><%= cat.name %></td>
+              <td>
+                <button class="btn btn-sm btn-outline" onclick='editCategory(<%- JSON.stringify(cat) %>)'>Edit</button>
+                <a href="/admin/categories/delete/<%= cat.id %>" class="btn btn-sm btn-danger confirm-delete">Delete</a>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="4" class="text-center">No categories found.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div id="addCategoryModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add Category</h3>
+      <span class="close" onclick="closeModal('addCategoryModal')">&times;</span>
+    </div>
+    <form action="/admin/categories/create" method="POST" enctype="multipart/form-data">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Category Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Category Image</label>
+          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event, 'addCatImgPreview')">
+          <img id="addCatImgPreview" class="img-preview mt-2" style="display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addCategoryModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div id="editCategoryModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Category</h3>
+      <span class="close" onclick="closeModal('editCategoryModal')">&times;</span>
+    </div>
+    <form action="/admin/categories/update" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="id" id="editCatId">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Category Name</label>
+          <input type="text" name="name" id="editCatName" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>New Image (leave blank to keep current)</label>
+          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event, 'editCatImgPreview')">
+          <img id="editCatImgPreview" class="img-preview mt-2" style="display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('editCategoryModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function editCategory(cat) {
+    document.getElementById('editCatId').value = cat.id;
+    document.getElementById('editCatName').value = cat.name;
+    document.getElementById('editCatImgPreview').style.display = 'none';
+    if(cat.image) {
+      document.getElementById('editCatImgPreview').src = cat.image;
+      document.getElementById('editCatImgPreview').style.display = 'block';
+    }
+    openModal('editCategoryModal');
+  }
+</script>
+
+<%- include('partials/footer') %>

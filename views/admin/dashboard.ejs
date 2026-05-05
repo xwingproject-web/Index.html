@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h2>Dashboard Summary</h2>
+</div>
+
+<div class="dashboard-stats">
+  <div class="stat-card">
+    <div class="stat-icon bg-primary">📁</div>
+    <div class="stat-info">
+      <h3>Total Categories</h3>
+      <p class="stat-number"><%= totalCategories %></p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon bg-success">📦</div>
+    <div class="stat-info">
+      <h3>Total Products</h3>
+      <p class="stat-number"><%= totalProducts %></p>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-quick-actions mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h3>Quick Actions</h3>
+    </div>
+    <div class="card-body">
+      <a href="/admin/products" class="btn btn-primary mr-2">Manage Products</a>
+      <a href="/admin/categories" class="btn btn-outline mr-2">Manage Categories</a>
+      <a href="/admin/settings" class="btn btn-outline">Store Settings</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

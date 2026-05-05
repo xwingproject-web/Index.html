@@ -1,0 +1,171 @@
+<%- include('partials/header') %>
+
+<div class="page-header d-flex justify-between align-center">
+  <h2>Products</h2>
+  <button class="btn btn-primary" onclick="openModal('addProductModal')">+ Add Product</button>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header d-flex justify-between">
+    <form action="/admin/products" method="GET" class="search-form">
+      <input type="text" name="search" placeholder="Search products..." value="<%= search %>" class="form-control" style="max-width: 300px; display: inline-block;">
+      <button type="submit" class="btn btn-outline">Search</button>
+      <% if(search) { %><a href="/admin/products" class="btn btn-outline">Clear</a><% } %>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (products.length > 0) { %>
+          <% products.forEach(function(prod) { %>
+            <tr>
+              <td><%= prod.id %></td>
+              <td>
+                <% if(prod.image) { %>
+                  <img src="<%= prod.image %>" class="table-img" alt="<%= prod.name %>">
+                <% } else { %>
+                  <span class="text-muted">No img</span>
+                <% } %>
+              </td>
+              <td><%= prod.name %></td>
+              <td><%= prod.category_name %></td>
+              <td>Rp <%= prod.price.toLocaleString('id-ID') %></td>
+              <td>
+                <button class="btn btn-sm btn-outline" onclick='editProduct(<%- JSON.stringify(prod).replace(/'/g, "\\'") %>)'>Edit</button>
+                <a href="/admin/products/delete/<%= prod.id %>" class="btn btn-sm btn-danger confirm-delete">Delete</a>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="6" class="text-center">No products found.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+  <div class="pagination mt-4 text-center">
+    <% for(let i = 1; i <= totalPages; i++) { %>
+      <a href="?page=<%= i %><%= search ? '&search='+search : '' %>" class="btn <%= page === i ? 'btn-primary' : 'btn-outline' %>"><%= i %></a>
+    <% } %>
+  </div>
+  <% } %>
+</div>
+
+<!-- Add Product Modal -->
+<div id="addProductModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <h3>Add Product</h3>
+      <span class="close" onclick="closeModal('addProductModal')">&times;</span>
+    </div>
+    <form action="/admin/products/create" method="POST" enctype="multipart/form-data">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select name="category_id" class="form-control" required>
+            <option value="">Select Category</option>
+            <% categories.forEach(function(cat) { %>
+              <option value="<%= cat.id %>"><%= cat.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <input type="number" name="price" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Product Image</label>
+          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event, 'addProdImgPreview')">
+          <img id="addProdImgPreview" class="img-preview mt-2" style="display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addProductModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div id="editProductModal" class="modal">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <h3>Edit Product</h3>
+      <span class="close" onclick="closeModal('editProductModal')">&times;</span>
+    </div>
+    <form action="/admin/products/update" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="id" id="editProdId">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" name="name" id="editProdName" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select name="category_id" id="editProdCategory" class="form-control" required>
+            <option value="">Select Category</option>
+            <% categories.forEach(function(cat) { %>
+              <option value="<%= cat.id %>"><%= cat.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <input type="number" name="price" id="editProdPrice" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" id="editProdDesc" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>New Image (leave blank to keep current)</label>
+          <input type="file" name="image" class="form-control" accept="image/*" onchange="previewImage(event, 'editProdImgPreview')">
+          <img id="editProdImgPreview" class="img-preview mt-2" style="display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('editProductModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function editProduct(prod) {
+    document.getElementById('editProdId').value = prod.id;
+    document.getElementById('editProdName').value = prod.name;
+    document.getElementById('editProdCategory').value = prod.category_id;
+    document.getElementById('editProdPrice').value = prod.price;
+    document.getElementById('editProdDesc').value = prod.description || '';
+    document.getElementById('editProdImgPreview').style.display = 'none';
+    if(prod.image) {
+      document.getElementById('editProdImgPreview').src = prod.image;
+      document.getElementById('editProdImgPreview').style.display = 'block';
+    }
+    openModal('editProductModal');
+  }
+</script>
+
+<%- include('partials/footer') %>
