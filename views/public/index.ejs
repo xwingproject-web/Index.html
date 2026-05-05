@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+<section class="hero-section" <%- config.hero_image ? `style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${config.hero_image}') center/cover no-repeat;"` : '' %>>
+  <div class="container text-center">
+    <h1 class="hero-title"><%= config.store_name %></h1>
+    <p class="hero-desc"><%= config.store_description %></p>
+  </div>
+</section>
+
+<section class="categories-section">
+  <div class="container">
+    <h2 class="section-title">Shop by Category</h2>
+    
+    <div class="category-grid">
+      <% if (categories && categories.length > 0) { %>
+        <% categories.forEach(function(cat) { %>
+          <a href="/category/<%= cat.id %>" class="category-card">
+            <div class="category-image-wrap">
+              <% if(cat.image) { %>
+                <img src="<%= cat.image %>" alt="<%= cat.name %>">
+              <% } else { %>
+                <div class="placeholder-img">No Image</div>
+              <% } %>
+            </div>
+            <div class="category-info">
+              <h3><%= cat.name %></h3>
+            </div>
+          </a>
+        <% }); %>
+      <% } else { %>
+        <p class="empty-state">No categories available at the moment.</p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
